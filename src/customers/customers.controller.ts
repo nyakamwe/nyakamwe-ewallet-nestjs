@@ -27,7 +27,7 @@ export class CustomersController {
         name: 'id',
         type: 'number'
     })
-    getOneCustomer(@Param('id') id:number){
+    getOneCustomer(@Param('id') id:string){
         try {
             return this.customerService.getOneCustomer(id)
         }catch(error){

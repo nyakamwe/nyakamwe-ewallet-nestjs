@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ListCustomersDto } from './dto/list-customers.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Customer } from './entity/customer.entity';
+import { Customer } from './entities/customer.entity';
+import { CreateCustomerDto } from './dto/create-customer.dto';
 
 // export type Customer = {
 //     id: number,
@@ -14,43 +15,27 @@ import { Customer } from './entity/customer.entity';
 
 @Injectable()
 export class CustomersService {
-    // constructor(@InjectRepository(Customer) private readonly customerRepository : Repository<Customer> ) {}
-    private customers = [
-        {
-            "id": "1",
-            "firstName": "eric",
-            "lastName": "mugisha",
-            "email": "mugishaeric@mail.com",
-            "password": "@password"
-          },
-          {
-            "id": "2",
-            "firstName": "kamana",
-            "lastName": "sam",
-            "email": "sma@mail.com",
-            "password": "@password"
-          },
-          {
-            "id": "3",
-            "firstName": "link",
-            "lastName": "sam",
-            "email": "nyakamweaimable@gmail.com",
-            "password": "Tester@12345"
-          }
-    ]
-    async getCustomers(): Promise<any>{
-        return this.customers
+    constructor(@InjectRepository(Customer) private customersRepository : Repository<Customer> ) {}
+    
+    async getCustomers(){
+        return this.customersRepository.find()
     }
 
-    getOneCustomer(id:string){
-        const customer = this.customers.find((customer)=> customer.id === id)
+    async create(createCustomerDto: CreateCustomerDto){
+        const newCustomer = this.customersRepository.create(createCustomerDto)
+        return this.customersRepository.save(newCustomer)
+    }
+
+    async getOneCustomer(id:string){
+        const customer = await this.customersRepository.findOneBy({ id })
+
         if(!customer){
             throw new Error('Customer not found')
         }
         return customer
     }
 
-    async findOne(email: string): Promise<Customer | undefined> {
-        return this.customers.find((customer) => customer.email === email );
+    async findOneByEmail(email: string): Promise<Customer | undefined> {
+        return this.customersRepository.findOneBy({email});
     }
 }

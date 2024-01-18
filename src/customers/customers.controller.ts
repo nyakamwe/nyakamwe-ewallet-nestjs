@@ -4,9 +4,10 @@ import {
     Post, 
     Param, 
     NotFoundException, 
-    Body
+    Body,
+    ParseUUIDPipe
 } from '@nestjs/common';
-import { ApiTags, ApiOperation,ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { ListCustomersDto } from './dto/list-customers.dto';
@@ -23,13 +24,9 @@ export class CustomersController {
 
     @Get(':id')
     @ApiOperation({ summary: 'Get single customer'})
-    @ApiParam({
-        name: 'id',
-        type: 'number'
-    })
-    getOneCustomer(@Param('id') id:string){
+    async getOneCustomer(@Param('id', ParseUUIDPipe) id:string){
         try {
-            return this.customerService.getOneCustomer(id)
+            return await this.customerService.getOneCustomer(id)
         }catch(error){
             throw new NotFoundException()
         }
@@ -39,7 +36,7 @@ export class CustomersController {
     @Post()
     @ApiOperation({ summary: 'Create a customer'})
     createCustomer(@Body() createCustomerDto: CreateCustomerDto){
-        return createCustomerDto
+        return this.customerService.create(createCustomerDto)
     }
 
     

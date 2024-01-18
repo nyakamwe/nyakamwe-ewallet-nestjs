@@ -2,15 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CustomersModule } from './customers/customers.module';
-// import { AuthModule } from './auth/auth.module';
 // import { WalletModule } from './wallet/wallet.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { typeOrmConfig } from './config/typeorm.config';
-import { Customer } from './customers/entity/customer.entity'
-import { CustomersService } from './customers/customers.service';
-
-console.log('$$$$$$$$', __dirname + 'entity/*.{js, ts}');
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,13 +17,13 @@ console.log('$$$$$$$$', __dirname + 'entity/*.{js, ts}');
       port: parseInt(process.env.DB_PORT),
       password: process.env.DB_PASSWORD,
       username: process.env.DB_USERNAME,
-      entities: [__dirname + 'entity/*.{js, ts}'],
+      entities: ['dist/**/*.entity.js'],
       database: process.env.DB_NAME,
       synchronize: true,
       logging: true,
     }),
-    CustomersModule, 
-    // AuthModule, 
+    AuthModule, 
+    CustomersModule,
     // WalletModule
   ],
   controllers: [AppController],

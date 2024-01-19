@@ -63,7 +63,7 @@ export class WalletController {
     }
   }
 
-  @Post(':walletId/topup')
+  @Patch(':walletId/topup')
   @ApiBearerAuth('access_token')
   @UseGuards(AuthGuard)
   @HttpCode(200)
@@ -74,11 +74,29 @@ export class WalletController {
     @Request() req
     ){
       const { id: customerId } = req.user
-      const wallet = await this.walletService.topUp(walletId, customerId, topUpWalletDto.balance)
+      const wallet = await this.walletService.topUp(walletId, customerId, topUpWalletDto.amount)
 
       return {
         message: 'Customer Wallet Topped Up successfully',
         wallet
       }
   }
+
+  @Get(':walletId/transactions')
+  @ApiBearerAuth('access_token')
+  @UseGuards(AuthGuard)
+  @HttpCode(200)
+  @ApiOperation({ summary: 'It helps customer to read wallet transactions' })
+  async walletTransaction(
+    @Param('walletId', ParseUUIDPipe) walletId: UUID,
+    @Request() req
+    ){
+      const { id: customerId } = req.user
+      const transactions = await this.walletService.findAllWalletTransactions(walletId, customerId)
+      return {
+        message: "Customer Wallet Transactions",
+        transactions
+      }
+  }
+
 }

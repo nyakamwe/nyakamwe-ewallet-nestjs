@@ -5,5 +5,5 @@ export class TopUpWalletDto {
     @IsNotEmpty()
     @IsNumber()
     @ApiProperty()
-    balance: number
+    amount: number
 }

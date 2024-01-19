@@ -3,12 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Wallet } from './entities/wallet.entity';
 import { UUID } from 'crypto';
-import { TopUpWalletDto } from './dto'
+import { WalletTransaction } from './entities/wallet-transactions.entity';
 
 @Injectable()
 export class WalletService {
   constructor(
-    @InjectRepository(Wallet) private walletRepository: Repository<Wallet>
+    @InjectRepository(Wallet) private walletRepository: Repository<Wallet>,
+    @InjectRepository(WalletTransaction) private walletTransactionRepository: Repository<WalletTransaction>
   ){}
 
   create(createWalletDto, customer) {
@@ -31,7 +32,8 @@ export class WalletService {
     return wallet
   }
 
-  async topUp(walletId: UUID, customerId: UUID, balance: number){
+  // TODO:  Implement actions that done in topup service to be using transaction
+  async topUp(walletId: UUID, customerId: UUID, amount: number){
     // Find wallet and increment its balance
     const existingWallet = await this.walletRepository.findOne({
       where: { id: walletId, customer: { id: customerId } },
@@ -40,9 +42,30 @@ export class WalletService {
     if (!existingWallet) {
       throw new NotFoundException('Wallet not found');
     }
+    // 1. Increment wallet balance
+    await this.walletRepository.increment({ id: walletId, customer: { id: customerId }}, "balance", amount)
 
-    await this.walletRepository.increment({ id: walletId, customer: { id: customerId }}, "balance", balance)
-    
+    // 2. Record a transaction
+    const transactionData = {
+      wallet: { id: walletId },
+      customer: { id: customerId },
+      status: 'pending',
+      type: 'topup',
+      amount
+    }
+
+    const transaction = await this.walletTransactionRepository.create(transactionData)
+    await this.walletTransactionRepository.save(transaction)
+
     return this.findOne(walletId, customerId)
+  }
+
+  async findAllWalletTransactions(walletId: UUID, customerId: UUID) {
+    return await this.walletTransactionRepository.find({ 
+      where: { 
+        wallet: { id: walletId }, 
+        customer: { id: customerId }
+      } 
+    })
   }
 }

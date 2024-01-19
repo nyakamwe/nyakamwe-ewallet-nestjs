@@ -7,6 +7,9 @@ export class Wallet {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
+    @Column()
+    name: string;
+
     @Column({ type: 'double precision' })
     balance: Double;
 

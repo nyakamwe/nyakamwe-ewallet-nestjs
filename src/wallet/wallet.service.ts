@@ -14,6 +14,7 @@ export class WalletService {
 
   create(createWalletDto, customer) {
     const newWallet = {
+      ...createWalletDto,
       balance: 0.0,
       customer: customer.id
     }

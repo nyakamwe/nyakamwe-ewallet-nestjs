@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpCode} from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { CustomerSignInDto } from './dto/customer-signin.dto';
 import { AuthService } from './auth.service';
@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 export class AuthController {
     constructor(private authService:AuthService){}
     @Post('login')
+    @HttpCode(200)
     @ApiOperation({ summary: 'It helps customers to login into their account'})
     signIn(@Body() signInDto: CustomerSignInDto){
         return this.authService.signIn(signInDto)

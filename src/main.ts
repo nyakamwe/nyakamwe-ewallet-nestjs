@@ -8,6 +8,11 @@ async function bootstrap() {
     .setTitle('NYAKAMWE Tekana E-wallet')
     .setDescription('The implementation of tekana e-wallet using NestJs in Engineering Induction phase.')
     .setVersion('1.0')
+    .addBearerAuth({
+      type:"http",
+      scheme:'bearer',
+      bearerFormat:'JWT',
+    } ,'access_token')
     // .addTag('Tekana')
     .build();
   const document = SwaggerModule.createDocument(app, config);

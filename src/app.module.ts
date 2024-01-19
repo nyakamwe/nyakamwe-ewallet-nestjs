@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CustomersModule } from './customers/customers.module';
-// import { WalletModule } from './wallet/wallet.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { typeOrmConfig } from './config/typeorm.config';
 import { AuthModule } from './auth/auth.module';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -23,8 +23,8 @@ import { AuthModule } from './auth/auth.module';
       logging: true,
     }),
     AuthModule, 
-    CustomersModule,
-    // WalletModule
+    CustomersModule, 
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [AppService],

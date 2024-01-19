@@ -1,4 +1,5 @@
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, PrimaryGeneratedColumn, Column,OneToMany } from "typeorm";
+import { Wallet } from "../../wallet/entities/wallet.entity";
 
 @Entity('customers')
 export class Customer {
@@ -17,4 +18,6 @@ export class Customer {
     @Column()
     password: string
 
+    @OneToMany(()=> Wallet, (wallet)=> wallet.customer)
+    wallets: Wallet
 }   

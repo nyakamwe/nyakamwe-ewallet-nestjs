@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, Column,OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column,OneToMany } from "typeorm";
 import { Wallet } from "../../wallet/entities/wallet.entity";
 
 @Entity('customers')

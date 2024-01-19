@@ -1,15 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { CreateWalletDto } from './dto/create-wallet.dto';
-import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Wallet } from './entities/wallet.entity';
 import { UUID } from 'crypto';
+import { TopUpWalletDto } from './dto'
 
 @Injectable()
 export class WalletService {
   constructor(
-    @InjectRepository(Wallet) private walletRespository: Repository<Wallet>
+    @InjectRepository(Wallet) private walletRepository: Repository<Wallet>
   ){}
 
   create(createWalletDto, customer) {
@@ -17,24 +16,33 @@ export class WalletService {
       balance: 0.0,
       customer: customer.id
     }
-    const wallet = this.walletRespository.create(newWallet)
-    return this.walletRespository.save(wallet)
+
+    const wallet = this.walletRepository.create(newWallet)
+    return this.walletRepository.save(wallet)
   }
 
-  async findAll(customerId) {
-    const wallets = await this.walletRespository.find({where:{ customer: customerId}})
+  async findAll(customerId: UUID) {
+    const wallets = await this.walletRepository.find({where:{ customer: { id: customerId }}})
     return wallets
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wallet`;
+  async findOne(walletId: UUID, customerId: UUID) {
+    const wallet = await this.walletRepository.findOneBy({ id: walletId, customer: { id: customerId }})
+    return wallet
   }
 
-  update(id: number, updateWalletDto: UpdateWalletDto) {
-    return `This action updates a #${id} wallet`;
-  }
+  async topUp(walletId: UUID, customerId: UUID, balance: number){
+    // Find wallet and increment its balance
+    const existingWallet = await this.walletRepository.findOne({
+      where: { id: walletId, customer: { id: customerId } },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} wallet`;
+    if (!existingWallet) {
+      throw new NotFoundException('Wallet not found');
+    }
+
+    await this.walletRepository.increment({ id: walletId, customer: { id: customerId }}, "balance", balance)
+    
+    return this.findOne(walletId, customerId)
   }
 }

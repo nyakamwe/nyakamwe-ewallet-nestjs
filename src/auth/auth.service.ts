@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CustomerSignInDto } from './dto/customer-signin.dto';
+import { CustomerSignInDto } from './dto'
 import { JwtService } from '@nestjs/jwt';
 import { CustomersService } from 'src/customers/customers.service';
 import * as bcrypt from 'bcrypt'
@@ -17,6 +17,7 @@ export class AuthService {
 
         const payload = {
             sub: customer.id,
+            id: customer.id,
             email: data.email
         }
 

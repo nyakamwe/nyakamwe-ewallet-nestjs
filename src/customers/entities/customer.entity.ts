@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column,OneToMany } from "typeorm";
+import { 
+    Entity, 
+    PrimaryGeneratedColumn, 
+    Column,
+    OneToMany, 
+    CreateDateColumn 
+} from "typeorm";
 import { Wallet } from "../../wallet/entities/wallet.entity";
 import { WalletTransaction } from "src/wallet/entities/wallet-transactions.entity";
 
@@ -18,6 +24,9 @@ export class Customer {
 
     @Column()
     password: string
+
+    @CreateDateColumn({})
+    createdAt: Date;
 
     @OneToMany(()=> Wallet, (wallet)=> wallet.customer)
     wallets: Wallet

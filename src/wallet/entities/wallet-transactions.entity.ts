@@ -1,7 +1,14 @@
 import { Wallet } from "./wallet.entity";
 import { Customer } from "../../customers/entities/customer.entity"
 import { IsEnum, IsNotEmpty } from "class-validator";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Double } from 'typeorm'
+import { 
+    Entity, 
+    PrimaryGeneratedColumn, 
+    Column, 
+    ManyToOne, 
+    Double,
+    CreateDateColumn 
+} from 'typeorm'
 
 @Entity()
 export class WalletTransaction {
@@ -21,6 +28,9 @@ export class WalletTransaction {
     @Column({ type: 'double precision' })
     @IsNotEmpty()
     amount: Double;
+
+    @CreateDateColumn()
+    createdAt: Date;
 
     @ManyToOne(()=> Customer, (customer)=> customer.transactions )
     customer: Customer

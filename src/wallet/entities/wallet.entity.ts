@@ -1,4 +1,11 @@
-import { Entity, Double, ManyToOne, PrimaryGeneratedColumn, Column } from "typeorm";
+import { 
+    Entity, 
+    Double, 
+    ManyToOne, 
+    PrimaryGeneratedColumn, 
+    Column, 
+    CreateDateColumn 
+} from "typeorm";
 import { Customer } from "../../customers/entities/customer.entity";
 import { WalletTransaction } from "./wallet-transactions.entity";
 
@@ -12,6 +19,9 @@ export class Wallet {
 
     @Column({ type: 'double precision' })
     balance: Double;
+
+    @CreateDateColumn()
+    createdAt: Date;
 
     @ManyToOne(()=> Customer, (customer)=> customer.wallets )
     customer: Customer;

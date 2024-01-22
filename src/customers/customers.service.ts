@@ -1,13 +1,16 @@
 import { Injectable, ConflictException  } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Connection } from 'typeorm';
 import { Customer } from './entities/customer.entity';
 import { CreateCustomerDto } from './dto'
 import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class CustomersService {
-    constructor(@InjectRepository(Customer) private customersRepository : Repository<Customer> ) {}
+    constructor(
+      @InjectRepository(Customer) private customersRepository : Repository<Customer>,
+      // private readonly connection: Connection, 
+      ) {}
     
     async getCustomers(){
         return this.customersRepository.find()
@@ -24,7 +27,7 @@ export class CustomersService {
 
             return await this.customersRepository.save(newCustomer);
           } catch (error) {
-            if (error.code === '23505' || error.detail.includes('already exists')) {
+            if (error?.code === '23505' || error?.detail?.includes('already exists')) {
               throw new ConflictException('Email address is already in use');
             } else {
               throw error;

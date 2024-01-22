@@ -15,7 +15,7 @@ import { WalletService } from './wallet.service';
 import { CreateWalletDto } from './dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { UUID } from 'crypto';
 import { TopUpWalletDto } from './dto';
 

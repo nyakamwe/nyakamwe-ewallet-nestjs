@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import dataSource from 'db/data-source';
+import dataSource from 'src/db/data-source';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,13 +19,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-
-  try {
-    await dataSource.connect();
-    console.log('Database connection successful');
-  } catch (error) {
-    console.error('Database connection failed', error);
-  }
 
   app.useGlobalPipes(new ValidationPipe())  // Enable the use of validation pipe globally
   

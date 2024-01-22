@@ -7,19 +7,22 @@ import { ConfigModule } from '@nestjs/config';
 import { typeOrmConfig } from './config/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import { WalletModule } from './wallet/wallet.module';
-import { dataSourceOptions } from '../db/data-source';
+import { dataSourceOptions } from './db/data-source';
 import { ConnectionModule } from './connection/connection.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true
     }), // Should stay on top of other modules in order to load .env file
+
     TypeOrmModule.forRoot(dataSourceOptions),
+    RedisModule,
+    ConnectionModule,
     AuthModule, 
     CustomersModule, 
     WalletModule,
-    ConnectionModule
   ],
   controllers: [AppController],
   providers: [AppService],

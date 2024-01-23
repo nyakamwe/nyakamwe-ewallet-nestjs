@@ -1,14 +1,17 @@
-import { Injectable, ConflictException  } from '@nestjs/common';
+import { Injectable, ConflictException, Logger  } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Connection } from 'typeorm';
 import { Customer } from './entities/customer.entity';
 import { CreateCustomerDto } from './dto'
 import * as bcrypt from 'bcrypt'
+import { RedisService } from 'src/redis/redis.service';
+import { log } from 'console';
 
 @Injectable()
 export class CustomersService {
     constructor(
       @InjectRepository(Customer) private customersRepository : Repository<Customer>,
+      private readonly redisService: RedisService
       // private readonly connection: Connection, 
       ) {}
     
@@ -37,10 +40,18 @@ export class CustomersService {
 
     async getOneCustomer(id:string){
         const customer = await this.customersRepository.findOneBy({ id })
+        log('CHECKING REDIS FROM', await this.redisService.get('all'))
 
+        const singleKey = await this.redisService.get('single-key')
+        log('CHECKING SINGLE', singleKey)
         if(!customer){
             throw new Error('Customer not found')
         }
+
+        if (singleKey){
+            return singleKey
+        }
+        await this.redisService.set('single-key', customer)
         return customer
     }
 

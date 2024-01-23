@@ -10,6 +10,8 @@ import { WalletModule } from './wallet/wallet.module';
 import { dataSourceOptions } from './db/data-source';
 import { ConnectionModule } from './connection/connection.module';
 import { RedisModule } from './redis/redis.module';
+import { KafkaModule } from './kafka/kafka.module';
+// import { TestConsumer } from './kafka/test.consumer';
 
 @Module({
   imports: [
@@ -22,9 +24,13 @@ import { RedisModule } from './redis/redis.module';
     ConnectionModule,
     AuthModule, 
     CustomersModule, 
-    WalletModule,
+    WalletModule, 
+    // KafkaModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService, 
+    // TestConsumer
+  ],
 })
 export class AppModule {}

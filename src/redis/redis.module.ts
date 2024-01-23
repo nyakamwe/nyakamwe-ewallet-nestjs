@@ -14,7 +14,8 @@ import { RedisService } from "./redis.service";
                   host: 'localhost',  
                   port: 6379,  
                 },        
-              }),      
+              }),
+              ttl: 6000     
             }),   
             inject: [ConfigService] 
         }), 

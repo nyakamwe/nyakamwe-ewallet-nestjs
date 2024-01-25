@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { CustomersController } from './customers.controller';
-import { CustomersService } from './customers.service';
+import { CustomersController } from './customer.controller';
+import { CustomerService } from './customer.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from './entities/customer.entity';
 import { RedisModule } from '../redis/redis.module';
@@ -11,8 +11,8 @@ import { RedisModule } from '../redis/redis.module';
     RedisModule
   ],
   controllers: [CustomersController],
-  providers: [CustomersService],
-  exports: [CustomersService]
+  providers: [CustomerService],
+  exports: [CustomerService]
 })
 
-export class CustomersModule {}
+export class CustomerModule {}

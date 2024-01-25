@@ -1,5 +1,5 @@
 import { Wallet } from "./wallet.entity";
-import { Customer } from "../../customers/entities/customer.entity"
+import { Customer } from "../../customer/entities/customer.entity"
 import { IsEnum, IsNotEmpty } from "class-validator";
 import { 
     Entity, 

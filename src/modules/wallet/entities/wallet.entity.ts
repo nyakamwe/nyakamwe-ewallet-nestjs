@@ -6,7 +6,7 @@ import {
     Column, 
     CreateDateColumn 
 } from "typeorm";
-import { Customer } from "../../customers/entities/customer.entity";
+import { Customer } from "../../customer/entities/customer.entity";
 import { WalletTransaction } from "./wallet-transactions.entity";
 
 @Entity('wallet')

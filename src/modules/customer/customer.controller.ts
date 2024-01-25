@@ -6,43 +6,40 @@ import {
     NotFoundException, 
     Body,
     ParseUUIDPipe,
-    UseInterceptors, 
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { CustomersService } from './customers.service';
+import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { ListCustomersDto } from './dto/list-customers.dto';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager'
 import { RedisService } from '../redis/redis.service';
-import { log } from 'console';
 
 @Controller('customers')
 @ApiTags('Customers')
 export class CustomersController {
     constructor(
-        private readonly customerService: CustomersService,
+        private readonly customerService: CustomerService,
         private readonly redisService: RedisService
     ){}
     @Get()
     @ApiOperation({ summary: 'Listing all customers'})
-    @UseInterceptors(CacheInterceptor) // Automatically cache response
-    @CacheTTL(6000)
     async getCustomers(){
-        // const cachedCustomers = await this.redisService.get('all-customers')
-        // console.log('cc Cashed Customers', cachedCustomers);
-        
-        // if(cachedCustomers){
-        //     return cachedCustomers
-        // }
+        const cachedCustomers = await this.redisService.get('all-customers')
+
+        if(cachedCustomers){
+            console.log('RETURN Cached Customers');
+            
+            return cachedCustomers
+        }
 
         const customers = await this.customerService.getCustomers()
-        // await this.redisService.set('all-customers', customers)
+        await this.redisService.set('all-customers', customers)
+        console.log('RETURN UNCACHED Customers');
+
         return customers
     }
 
     @Get(':id')
     @ApiOperation({ summary: 'Get single customer'})
-    // @UseInterceptors(CacheInterceptor)
     async getOneCustomer(@Param('id', ParseUUIDPipe) id:string){
         try {
             return await this.customerService.getOneCustomer(id)
@@ -58,5 +55,4 @@ export class CustomersController {
         return this.customerService.create(createCustomerDto)
     }
 
-    
 }

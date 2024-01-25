@@ -1,15 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import * as pactum from 'pactum'
+// import { AppModule } from '../src/app.module';
 import { AppModule } from '../src/app.module';
-import { CreateCustomerDto } from 'src/customers/dto';
+import { CreateCustomerDto } from '../src/modules/customer/dto';
 import { Connection} from 'typeorm'
 import { ConnectionService } from '../src/connection/connection.service';
-import { CreateWalletDto, TopUpWalletDto } from 'src/wallet/dto';
+import { CreateWalletDto, TopUpWalletDto } from '../src/modules/wallet/dto';
+import { KafkaConsumerService } from '../src/modules/kafka/kafka.consumer';
+import { KafkaProducerService } from '../src/modules/kafka/kafka.producer';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 describe('Tekana wallet E2E Test', () => {
   let app: INestApplication;
+  
+  let kafkaConsumerService: KafkaConsumerService
+  let kafkaProducerService: KafkaProducerService
+
+  const servers:any[] =[]
+  const apps:INestApplication[] = []
 
   const mockCustomerDto: CreateCustomerDto = {
     firstName: 'Test',
@@ -38,11 +47,38 @@ describe('Tekana wallet E2E Test', () => {
     .compile();
 
     app = moduleFixture.createNestApplication();
-    await app.init();
-    // await app.listen(3333);
+    
 
     dbConnection = moduleFixture.get<ConnectionService>(ConnectionService).getDbHandler()
     httpServer = app.getHttpServer()
+
+    const server = app.getHttpAdapter().getInstance();
+
+
+    // Kafka
+    const mockKafkaConnection = {}
+    kafkaConsumerService = moduleFixture.get<KafkaConsumerService>(KafkaConsumerService)
+    kafkaProducerService = moduleFixture.get<KafkaProducerService>(KafkaProducerService)
+    console.log('%%%%%', kafkaConsumerService);
+    
+    app.connectMicroservice<MicroserviceOptions>({
+      transport: Transport.KAFKA,
+      options: {
+        client: {
+          brokers: ['localhost:9092'],
+        },
+        run: {
+          partitionsConsumedConcurrently: 2,
+        },
+      },
+    })
+
+    servers.push(server)
+    apps.push(app)
+
+    await app.startAllMicroservices()
+    await app.init();
+    // await app.listen(3333);
   })
 
   afterAll(async()=>{
@@ -51,6 +87,16 @@ describe('Tekana wallet E2E Test', () => {
     await dbConnection.manager.getRepository('Customer').delete({email: 'test@gmail.com',})
     await app.close
   })
+
+  it('should send a message to Kafka and receive it', async () => {
+    // Use supertest to make a request to an endpoint that triggers Kafka message production
+    await request(app.getHttpServer())
+        .get('/')
+        .send({ message: 'Test message' })
+        .expect(200);
+
+    //TODO: Check here some expects with refering to producer and consumer of a kafka
+});
 
   it('It should create a new customer (POST) /customers', async () => {
     return request(httpServer)

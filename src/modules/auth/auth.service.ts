@@ -1,14 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CustomerSignInDto } from './dto'
 import { JwtService } from '@nestjs/jwt';
-import { CustomersService } from '../customers/customers.service';
+import { CustomerService } from '../customer/customer.service';
 import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class AuthService {
-    constructor(private jwtService: JwtService, private customersService: CustomersService) { }
+    constructor(private jwtService: JwtService, private customerService: CustomerService) { }
     async signIn(data: CustomerSignInDto) {
-        const customer = await this.customersService.findOneByEmail(data.email)
+        const customer = await this.customerService.findOneByEmail(data.email)
         const isPasswordMatch = customer?.password ? await bcrypt.compare(data.password, customer.password) : false
 
         if (!isPasswordMatch) {

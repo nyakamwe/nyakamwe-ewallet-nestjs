@@ -22,7 +22,8 @@
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:show": "npm run typeorm -- migration:show",
-    "migration:revert": "npm run typeorm -- migration:revert"
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "oracle:start": "docker-compose -f docker-compose-oracle.yml up"
   },
   "dependencies": {
     "@nestjs/axios": "^3.0.1",
@@ -44,6 +45,7 @@
     "class-validator": "^0.14.1",
     "dotenv": "^16.3.2",
     "kafkajs": "^2.2.4",
+    "oracledb": "^6.3.0",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

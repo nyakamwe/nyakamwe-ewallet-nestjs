@@ -1,20 +1,18 @@
-import { log } from 'console'
 import { DataSource, DataSourceOptions } from 'typeorm'
 require('dotenv').config()
 
 const isTesting = process.env.NODE_ENV === 'test'
 const isDev = process.env.NODE_ENV === 'development'
 
-log('ENV', process.env.NODE_ENV)
-
 export const dataSourceOptions: DataSourceOptions = {
-    type: 'postgres',
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT),
-    password: process.env.DB_PASSWORD,
-    username: process.env.DB_USERNAME,
-    database: process.env.DB_NAME,
+    type: 'oracle',
+    host: process.env.ORACLE_DB_HOST,
+    port: parseInt(process.env.ORACLE_DB_PORT),
+    password: process.env.ORACLE_DB_PASSWORD,
+    username: process.env.ORACLE_DB_USERNAME,
+    database: process.env.ORACLE_DB_NAME,
     // entities: ['dist/**/*.entity.js'],
+    sid: process.env.ORACLE_SID,
     entities: [isTesting ? 'src/**/*.entity.ts' :
         isDev ? 'dist/**/*.entity.js' : ''
     ],

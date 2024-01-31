@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-// import { AppModule } from '../src/app.module';
 import { AppModule } from '../src/app.module';
 import { CreateCustomerDto } from '../src/modules/customer/dto';
 import { Connection} from 'typeorm'
@@ -59,7 +58,6 @@ describe('Tekana wallet E2E Test', () => {
     const mockKafkaConnection = {}
     kafkaConsumerService = moduleFixture.get<KafkaConsumerService>(KafkaConsumerService)
     kafkaProducerService = moduleFixture.get<KafkaProducerService>(KafkaProducerService)
-    console.log('%%%%%', kafkaConsumerService);
     
     app.connectMicroservice<MicroserviceOptions>({
       transport: Transport.KAFKA,
@@ -89,6 +87,8 @@ describe('Tekana wallet E2E Test', () => {
   })
 
   it('should send a message to Kafka and receive it', async () => {
+    const messagePayload = { messages: [{ value: 'Test'}] };
+    const kf = new KafkaProducerService()
     // Use supertest to make a request to an endpoint that triggers Kafka message production
     await request(app.getHttpServer())
         .get('/')
@@ -96,6 +96,8 @@ describe('Tekana wallet E2E Test', () => {
         .expect(200);
 
     //TODO: Check here some expects with refering to producer and consumer of a kafka
+    // Assert that the mock Kafka producer received the message
+    // expect(kf.produce).toHaveBeenCalledWith('test', messagePayload);
 });
 
   it('It should create a new customer (POST) /customers', async () => {

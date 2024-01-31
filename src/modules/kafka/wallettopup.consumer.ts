@@ -2,13 +2,14 @@ import { Injectable, OnModuleInit } from "@nestjs/common";
 import { KafkaConsumerService } from "./kafka.consumer";
 
 @Injectable()
-export class TestConsumer implements OnModuleInit{
-    constructor(private readonly kafkaConsumer: KafkaConsumerService) {}
+export class WalletTopUpConsumer implements OnModuleInit {
+    constructor(private readonly kafkaConsumerService: KafkaConsumerService){}
     async onModuleInit() {
-        await this.kafkaConsumer.consume(
-            {topics: ['test', 'wallet-topup']}, 
+        await this.kafkaConsumerService.consume(
+            {topics: ['wallet-topup']},
             {
-                eachMessage: async({ topic, partition, message })=>{
+                eachMessage: async({ topic, message, partition})=>{
+                    // TODO: There is where you perform actions when message comes to kafka
                     console.log({
                         topic: topic.toString(),
                         partition: partition.toString(),

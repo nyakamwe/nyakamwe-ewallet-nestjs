@@ -13,10 +13,16 @@ export class CustomerService {
       private readonly redisService: RedisService
       ) {}
     
+    /**
+     * List of all customers
+     */
     async getCustomers(){
         return this.customersRepository.find()
     }
 
+    /**
+     * Create new customer
+     */
     async create(createCustomerDto: CreateCustomerDto){
         try {
             const newCustomerDto = {
@@ -28,7 +34,7 @@ export class CustomerService {
 
             return await this.customersRepository.save(newCustomer);
           } catch (error) {
-            if (error?.code === '23505' || error?.detail?.includes('already exists')) {
+            if (error?.code === 'ORA-00001' || error?.message?.includes('unique constraint')) {
               throw new ConflictException('Email address is already in use');
             } else {
               throw error;
@@ -36,22 +42,17 @@ export class CustomerService {
           }
     }
 
+    /**
+     * Customer Details
+     */
     async getOneCustomer(id:string){
         const customer = await this.customersRepository.findOneBy({ id })
-        const singleKey = await this.redisService.get('single-key')
-        if(!customer){
-            throw new Error('Customer not found')
-        }
-
-        if (singleKey){
-            return singleKey
-        }
-
-        await this.redisService.set('single-key', customer)
-
         return customer
     }
 
+    /**
+     * Get user by email
+     */
     async findOneByEmail(email: string): Promise<Customer | undefined> {
         return this.customersRepository.findOneBy({email});
     }

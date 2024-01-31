@@ -1,19 +1,29 @@
-import { Injectable, Inject } from "@nestjs/common";
-import {  CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager'
+import { Injectable } from '@nestjs/common';
+import { RedisService as LiaoLiaoRedisService, DEFAULT_REDIS_NAMESPACE } from '@liaoliaots/nestjs-redis';
+import Redis from 'ioredis';
+import { CACHE_1_MINUTE } from '../../shared/constants';
 
 @Injectable()
 export class RedisService {
-    constructor(@Inject(CACHE_MANAGER) private cacheStore: CacheStore) {}
-    
-    async get(key:string){
-        return await this.cacheStore.get(key)
-    }
+  private readonly redis: Redis;
 
-    async set(key:string, value: unknown){
-        return await this.cacheStore.set(key, value)
-    }
+  constructor(private readonly redisService: LiaoLiaoRedisService) {
+    this.redis = this.redisService.getClient();
+    // or
+    // this.redis = this.redisService.getClient(DEFAULT_REDIS_NAMESPACE);
+  }
 
-    async del(key:string){
-        return await this.cacheStore.del(key)
-    }
+  /** 
+   * Get cache by key 
+   */
+  async get(key:string){
+    return await this.redis.get(key)
+  }
+
+   /**
+   * Save data in cache
+   */
+  async set(key:string, value: string){
+    return await this.redis.set(key, value, 'EX', CACHE_1_MINUTE);
+  }
 }

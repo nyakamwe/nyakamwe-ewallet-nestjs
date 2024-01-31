@@ -4,14 +4,19 @@ import { Repository } from 'typeorm';
 import { Wallet } from './entities/wallet.entity';
 import { UUID } from 'crypto';
 import { WalletTransaction } from './entities/wallet-transactions.entity';
+import { KafkaProducerService } from '../kafka/kafka.producer'
 
 @Injectable()
 export class WalletService {
   constructor(
     @InjectRepository(Wallet) private walletRepository: Repository<Wallet>,
-    @InjectRepository(WalletTransaction) private walletTransactionRepository: Repository<WalletTransaction>
+    @InjectRepository(WalletTransaction) private walletTransactionRepository: Repository<WalletTransaction>,
+    private readonly kafkaProducerService: KafkaProducerService
   ){}
 
+  /**
+   * Create a wallet
+   */
   create(createWalletDto, customer) {
     const newWallet = {
       ...createWalletDto,
@@ -23,16 +28,25 @@ export class WalletService {
     return this.walletRepository.save(wallet)
   }
 
+  /**
+   * List all customer wallets
+   */
   async findAll(customerId: UUID) {
     const wallets = await this.walletRepository.find({where:{ customer: { id: customerId }}})
     return wallets
   }
 
+  /**
+   * Customer wallet details
+   */
   async findOne(walletId: UUID, customerId: UUID) {
     const wallet = await this.walletRepository.findOneBy({ id: walletId, customer: { id: customerId }})
     return wallet
   }
 
+  /**
+   * Increase wallet balance
+   */
   // TODO:  Implement actions that done in topup service to be using transaction
   async topUp(walletId: UUID, customerId: UUID, amount: number){
     // Find wallet and increment its balance
@@ -58,9 +72,20 @@ export class WalletService {
     const transaction = await this.walletTransactionRepository.create(transactionData)
     await this.walletTransactionRepository.save(transaction)
 
+    // 3. Send Transaction Data to Kafka
+    await this.kafkaProducerService.produce({
+      topic: 'wallet-topup',
+      messages: [{
+        value: JSON.stringify(transactionData)
+      }]
+    })
+
     return this.findOne(walletId, customerId)
   }
 
+  /**
+   * List all transactions of a wallet
+   */
   async findAllWalletTransactions(walletId: UUID, customerId: UUID) {
     return await this.walletTransactionRepository.find({ 
       where: { 

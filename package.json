@@ -26,6 +26,7 @@
     "oracle:start": "docker-compose -f docker-compose-oracle.yml up"
   },
   "dependencies": {
+    "@liaoliaots/nestjs-redis": "^9.0.5",
     "@nestjs/axios": "^3.0.1",
     "@nestjs/cache-manager": "^2.2.0",
     "@nestjs/common": "^10.0.0",
@@ -37,6 +38,7 @@
     "@nestjs/swagger": "^7.2.0",
     "@nestjs/typeorm": "^10.0.1",
     "@types/cache-manager": "^4.0.6",
+    "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "cache-manager": "^5.4.0",
     "cache-manager-redis-store": "^3.0.1",
@@ -44,6 +46,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.3.2",
+    "ioredis": "^5.3.2",
     "kafkajs": "^2.2.4",
     "oracledb": "^6.3.0",
     "pg": "^8.11.3",

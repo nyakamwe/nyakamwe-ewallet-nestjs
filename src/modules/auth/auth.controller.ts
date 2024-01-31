@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, HttpCode} from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
+import { Controller, Post, Body, HttpCode} from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CustomerSignInDto } from './dto'
 import { AuthService } from './auth.service';
 

@@ -1,24 +1,16 @@
 import { Module } from "@nestjs/common";
-import { CacheModule } from '@nestjs/cache-manager'
-import { ConfigService } from "@nestjs/config";
-import { redisStore } from 'cache-manager-redis-yet'
 import { RedisService } from "./redis.service";
+import { RedisModule as LiaoLiaoRedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
     imports: [
-        CacheModule.registerAsync({  
-            isGlobal: true,  
-            useFactory: async (configService: ConfigService) => ({  
-              store: await redisStore({  
-                socket: {  
-                  host: 'localhost',  
-                  port: 6379,  
-                },        
-              }),
-              ttl: 6000     
-            }),   
-            inject: [ConfigService] 
-        }), 
+      LiaoLiaoRedisModule.forRoot({
+        config: {
+          host: 'localhost',
+          port: 6379,
+          password: 'authpassword',
+        },
+      }),
     ],
     providers: [RedisService],
     exports: [RedisService]

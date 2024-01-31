@@ -23,17 +23,14 @@ export class CustomersController {
     @Get()
     @ApiOperation({ summary: 'Listing all customers'})
     async getCustomers(){
-        const cachedCustomers = await this.redisService.get('all-customers')
+        const cachedCustomers = await this.redisService.get('all-customers')        
 
         if(cachedCustomers){
-            console.log('RETURN Cached Customers');
-            
             return cachedCustomers
         }
 
         const customers = await this.customerService.getCustomers()
-        await this.redisService.set('all-customers', customers)
-        console.log('RETURN UNCACHED Customers');
+        await this.redisService.set('all-customers', JSON.stringify(customers))
 
         return customers
     }

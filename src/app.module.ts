@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { CustomerModule } from './modules/customer/customer.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { typeOrmConfig } from './config/typeorm.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { dataSourceOptions } from './db/data-source';

@@ -5,6 +5,9 @@ import { Wallet } from './entities/wallet.entity';
 import { UUID } from 'crypto';
 import { WalletTransaction } from './entities/wallet-transactions.entity';
 import { KafkaProducerService } from '../kafka/kafka.producer'
+import  { WalletTransactionTypeEnum, WalletTransactionStatusEnum } from './enums/wallet-transactions.enum'
+import { CreateWalletTransactionRequestDto } from './dto/create-wallet-transaction.dto'
+import { _404 } from 'src/shared/constants';
 
 @Injectable()
 export class WalletService {
@@ -25,14 +28,16 @@ export class WalletService {
     }
 
     const wallet = this.walletRepository.create(newWallet)
+
     return this.walletRepository.save(wallet)
   }
 
   /**
    * List all customer wallets
    */
-  async findAll(customerId: UUID) {
+  async findAll(customerId: UUID){
     const wallets = await this.walletRepository.find({where:{ customer: { id: customerId }}})
+
     return wallets
   }
 
@@ -41,6 +46,11 @@ export class WalletService {
    */
   async findOne(walletId: UUID, customerId: UUID) {
     const wallet = await this.walletRepository.findOneBy({ id: walletId, customer: { id: customerId }})
+
+    if (!wallet){
+      throw new NotFoundException(_404.WALLET_NOT_FOUND)
+    }
+
     return wallet
   }
 
@@ -55,21 +65,22 @@ export class WalletService {
     });
 
     if (!existingWallet) {
-      throw new NotFoundException('Wallet not found');
+      throw new NotFoundException(_404.WALLET_NOT_FOUND);
     }
     // 1. Increment wallet balance
     await this.walletRepository.increment({ id: walletId, customer: { id: customerId }}, "balance", amount)
 
     // 2. Record a transaction
-    const transactionData = {
+    const transactionData : CreateWalletTransactionRequestDto = {
       wallet: { id: walletId },
       customer: { id: customerId },
-      status: 'pending',
-      type: 'topup',
+      status: WalletTransactionStatusEnum.PENDING,
+      type: WalletTransactionTypeEnum.TOPUP,
       amount
     }
 
     const transaction = await this.walletTransactionRepository.create(transactionData)
+
     await this.walletTransactionRepository.save(transaction)
 
     // 3. Send Transaction Data to Kafka
@@ -87,6 +98,7 @@ export class WalletService {
    * List all transactions of a wallet
    */
   async findAllWalletTransactions(walletId: UUID, customerId: UUID) {
+
     return await this.walletTransactionRepository.find({ 
       where: { 
         wallet: { id: walletId }, 

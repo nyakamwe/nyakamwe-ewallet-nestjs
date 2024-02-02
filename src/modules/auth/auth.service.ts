@@ -3,16 +3,19 @@ import { CustomerSignInDto } from './dto'
 import { JwtService } from '@nestjs/jwt';
 import { CustomerService } from '../customer/customer.service';
 import * as bcrypt from 'bcrypt'
+import { _401 } from 'src/shared/constants';
 
 @Injectable()
 export class AuthService {
     constructor(private jwtService: JwtService, private customerService: CustomerService) { }
+
     async signIn(data: CustomerSignInDto) {
         const customer = await this.customerService.findOneByEmail(data.email)
+
         const isPasswordMatch = customer?.password ? await bcrypt.compare(data.password, customer.password) : false
 
         if (!isPasswordMatch) {
-            throw new UnauthorizedException()
+            throw new UnauthorizedException(_401.INVALID_CREDENTIALS)
         }
 
         const payload = {

@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 @ApiTags('Auth')
 export class AuthController {
     constructor(private authService:AuthService){}
+
     @Post('login')
     @HttpCode(200)
     @ApiOperation({ summary: 'It helps customers to login into their account'})

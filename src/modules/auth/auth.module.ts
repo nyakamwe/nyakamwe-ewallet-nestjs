@@ -12,7 +12,7 @@ import { CustomerModule } from '../customer/customer.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         global: true,
-        signOptions: { expiresIn: '24h' },
+        signOptions: { expiresIn: configService.get<string>('TOKEN_EXPIRATION_TIME') },
         secret: configService.get<string>('SECRET_KEY'),
       }),
       inject: [ConfigService],

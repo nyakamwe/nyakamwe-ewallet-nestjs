@@ -10,20 +10,22 @@ import {
     CreateDateColumn 
 } from 'typeorm'
 
+import { WalletTransactionTypeEnum, WalletTransactionStatusEnum } from "../enums/wallet-transactions.enum";
+
 @Entity()
 export class WalletTransaction {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
-    @IsEnum(['pending', 'success', 'failed', 'timedout'])
     @IsNotEmpty()
-    status: string
+    @IsEnum(WalletTransactionStatusEnum)
+    @Column()
+    status: WalletTransactionStatusEnum
 
-    @Column()
-    @IsEnum(['topup', 'pay'])
     @IsNotEmpty()
-    type: string
+    @IsEnum(WalletTransactionTypeEnum)
+    @Column()
+    type: WalletTransactionTypeEnum
 
     @Column({ type: 'double precision' })
     @IsNotEmpty()

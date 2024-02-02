@@ -13,18 +13,17 @@ import {
 } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { CreateWalletDto } from './dto';
-import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { UUID } from 'crypto';
 import { TopUpWalletDto } from './dto';
+import { Wallet } from './entities/wallet.entity';
+import { WalletTransaction } from './entities/wallet-transactions.entity';
 
 @Controller('wallet')
 @ApiTags('Wallet')
 export class WalletController {
-  constructor(
-    private readonly walletService: WalletService,
-    ) {}
+  constructor(private readonly walletService: WalletService,) {}
 
   @Post()
   @ApiBearerAuth('access_token')
@@ -37,30 +36,21 @@ export class WalletController {
   @ApiOperation({ summary: 'It helps to list wallets of a customer' })
   @ApiBearerAuth('access_token')
   @UseGuards(AuthGuard)
-  async findAll(@Request() req) {
+  async findAll(@Request() req): Promise<Wallet[]> {
     const { id: customerId } = req.user
-    const wallets = await this.walletService.findAll(customerId);
-    return {
-      message: 'Customer Wallets',
-      wallets
-    }
+
+     return await this.walletService.findAll(customerId);
+
   }
 
   @Get(':walletId')
   @ApiBearerAuth('access_token')
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'It helps customer to view details of wallet' })
-  async findOne(@Param('walletId', ParseUUIDPipe) walletId: UUID, @Request() req) {
+  async findOne(@Param('walletId', ParseUUIDPipe) walletId: UUID, @Request() req): Promise<Wallet> {
     const { id: customerId } = req.user
-    const wallet = await this.walletService.findOne(walletId, customerId);
-    if (!wallet){
-      return { message: 'Wallet not found, try again' }
-    }
 
-    return {
-      message: 'Customer Wallet Details',
-      wallet
-    }
+    return await this.walletService.findOne(walletId, customerId);
   }
 
   @Patch(':walletId/topup')
@@ -68,18 +58,10 @@ export class WalletController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   @ApiOperation({ summary: 'It helps customer to update wallet balance' })
-  async walletTopUp(
-    @Param('walletId', ParseUUIDPipe) walletId: UUID,
-    @Body() topUpWalletDto: TopUpWalletDto,
-    @Request() req
-    ){
+  async walletTopUp(@Param('walletId', ParseUUIDPipe) walletId: UUID, @Body() topUpWalletDto: TopUpWalletDto, @Request() req ): Promise<Wallet> {
       const { id: customerId } = req.user
-      const wallet = await this.walletService.topUp(walletId, customerId, topUpWalletDto.amount)
 
-      return {
-        message: 'Customer Wallet Topped Up successfully',
-        wallet
-      }
+      return await this.walletService.topUp(walletId, customerId, topUpWalletDto.amount)
   }
 
   @Get(':walletId/transactions')
@@ -87,16 +69,10 @@ export class WalletController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   @ApiOperation({ summary: 'It helps customer to read wallet transactions' })
-  async walletTransaction(
-    @Param('walletId', ParseUUIDPipe) walletId: UUID,
-    @Request() req
-    ){
+  async walletTransaction(@Param('walletId', ParseUUIDPipe) walletId: UUID, @Request() req): Promise<WalletTransaction[]>{
       const { id: customerId } = req.user
-      const transactions = await this.walletService.findAllWalletTransactions(walletId, customerId)
-      return {
-        message: "Customer Wallet Transactions",
-        transactions
-      }
+
+      return await this.walletService.findAllWalletTransactions(walletId, customerId)
   }
 
 }

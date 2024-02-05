@@ -15,6 +15,7 @@ export class KafkaProducerService implements OnModuleInit, OnApplicationShutdown
     async onModuleInit() {
         // Connect Producer on Module initialization
         await this.producer.connect();
+        console.log(`🎉 Client successfully connected Kafka server... 👏`);
     }
 
     async produce(record: ProducerRecord) {

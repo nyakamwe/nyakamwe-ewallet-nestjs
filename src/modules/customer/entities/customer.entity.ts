@@ -3,7 +3,8 @@ import {
     PrimaryGeneratedColumn, 
     Column,
     OneToMany, 
-    CreateDateColumn 
+    CreateDateColumn,
+    Index
 } from "typeorm";
 import { Wallet } from "../../wallet/entities/wallet.entity";
 import { WalletTransaction } from "../../wallet/entities/wallet-transactions.entity";
@@ -20,6 +21,7 @@ export class Customer {
     lastName: string;
 
     @Column({unique: true})
+    @Index()
     email: string;
 
     @Column()

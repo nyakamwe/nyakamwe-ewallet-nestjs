@@ -3,7 +3,7 @@ import { CustomerSignInDto } from './dto'
 import { JwtService } from '@nestjs/jwt';
 import { CustomerService } from '../customer/customer.service';
 import * as bcrypt from 'bcrypt'
-import { _401 } from 'src/shared/constants';
+import { _401 } from '../../shared/constants';
 
 @Injectable()
 export class AuthService {

@@ -12,7 +12,7 @@ import {
   HttpCode
 } from '@nestjs/common';
 import { WalletService } from './wallet.service';
-import { CreateWalletDto } from './dto';
+import { CreateWalletRequestDto } from './dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { UUID } from 'crypto';
@@ -28,7 +28,7 @@ export class WalletController {
   @Post()
   @ApiBearerAuth('access_token')
   @UseGuards(AuthGuard)
-  create(@Body() createWalletDto: CreateWalletDto, @Request() req) {
+  create(@Body() createWalletDto: CreateWalletRequestDto, @Request() req) {
     return this.walletService.create(createWalletDto, req.user);
   }
 

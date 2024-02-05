@@ -24,3 +24,19 @@ export const _404 = {
         message: 'Wallet you are looking for not found'
     }
 }
+
+/** Created */
+export const _201 = {
+    CREATED: {
+        code: 'CREATED',
+        message: 'Created successfully'
+    }
+}
+
+/** OK */
+export const _200 = {
+    OK: {
+        code: 'OK',
+        message: 'Ok'
+    }
+}

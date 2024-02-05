@@ -2,7 +2,7 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Customer } from './entities/customer.entity';
-import { CreateCustomerDto } from './dto'
+import { CreateCustomerRequestDto } from './dto'
 import * as bcrypt from 'bcrypt'
 import { RedisService } from '../redis/redis.service';
 
@@ -23,7 +23,7 @@ export class CustomerService {
     /**
      * Create new customer
      */
-    async create(createCustomerDto: CreateCustomerDto){
+    async create(createCustomerDto: CreateCustomerRequestDto){
         try {
             const newCustomerDto = {
               ...createCustomerDto,

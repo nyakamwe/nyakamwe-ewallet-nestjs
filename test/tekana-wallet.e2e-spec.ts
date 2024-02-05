@@ -2,31 +2,31 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { CreateCustomerDto } from '../src/modules/customer/dto';
+import { CreateCustomerRequestDto } from '../src/modules/customer/dto';
 import { Connection} from 'typeorm'
 import { ConnectionService } from '../src/connection/connection.service';
-import { CreateWalletDto, TopUpWalletDto } from '../src/modules/wallet/dto';
+import { CreateWalletRequestDto, TopUpWalletDto } from '../src/modules/wallet/dto';
 import { KafkaConsumerService } from '../src/modules/kafka/kafka.consumer';
 import { KafkaProducerService } from '../src/modules/kafka/kafka.producer';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { _401, _200, _201, _400 } from '../src/shared/constants';
+import { RedisService } from '../src/modules/redis/redis.service';
+import { Customer } from 'src/modules/customer/entities/customer.entity';
 
 describe('Tekana wallet E2E Test', () => {
   let app: INestApplication;
-  
-  let kafkaConsumerService: KafkaConsumerService
-  let kafkaProducerService: KafkaProducerService
 
-  const servers:any[] =[]
-  const apps:INestApplication[] = []
+  let cachingService: RedisService;
 
-  const mockCustomerDto: CreateCustomerDto = {
+  let registeredCustomer: Customer
+
+  const mockCustomerDto: CreateCustomerRequestDto = {
     firstName: 'Test',
     lastName: 'TestLa',
     email: 'test@gmail.com',
     password: 'Tester@12345'
   } 
 
-  const mockWalletCreateDto: CreateWalletDto = {
+  const walletCreateDto: CreateWalletRequestDto = {
     name: 'testWalletName'
   }
 
@@ -39,78 +39,88 @@ describe('Tekana wallet E2E Test', () => {
   let token: string
   let wallet: any
 
+  // Mock Kafka services
+  const mockKafkaConsumerService = {
+    consume: jest.fn(),
+    onApplicationShutdown: jest.fn(),
+  };
+
+  const mockKafkaProducerService = {
+    produce: jest.fn(),
+    onModuleInit: jest.fn(),
+    onApplicationShutdown: jest.fn(),
+  };
+
   beforeAll(async()=>{
     const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [AppModule],
     })
+    .overrideProvider(KafkaProducerService)
+    .useValue(mockKafkaProducerService)
+    .overrideProvider(KafkaConsumerService)
+    .useValue(mockKafkaConsumerService)
     .compile();
 
     app = moduleFixture.createNestApplication();
     
-
     dbConnection = moduleFixture.get<ConnectionService>(ConnectionService).getDbHandler()
+
+    cachingService = moduleFixture.get<RedisService>(RedisService)
+    
     httpServer = app.getHttpServer()
 
-    const server = app.getHttpAdapter().getInstance();
-
-
-    // Kafka
-    const mockKafkaConnection = {}
-    kafkaConsumerService = moduleFixture.get<KafkaConsumerService>(KafkaConsumerService)
-    kafkaProducerService = moduleFixture.get<KafkaProducerService>(KafkaProducerService)
-    
-    app.connectMicroservice<MicroserviceOptions>({
-      transport: Transport.KAFKA,
-      options: {
-        client: {
-          brokers: ['localhost:9092'],
-        },
-        run: {
-          partitionsConsumedConcurrently: 2,
-        },
-      },
-    })
-
-    servers.push(server)
-    apps.push(app)
-
-    await app.startAllMicroservices()
     await app.init();
-    // await app.listen(3333);
   })
 
   afterAll(async()=>{
     await dbConnection.manager.getRepository('WalletTransaction').delete({})
     await dbConnection.manager.getRepository('Wallet').delete({name: 'testWalletName',})
     await dbConnection.manager.getRepository('Customer').delete({email: 'test@gmail.com',})
-    await app.close
+
+    cachingService.clearAllKeys()
+
+    await app.close()
   })
 
-  it('should send a message to Kafka and receive it', async () => {
-    const messagePayload = { messages: [{ value: 'Test'}] };
-    const kf = new KafkaProducerService()
-    // Use supertest to make a request to an endpoint that triggers Kafka message production
-    await request(app.getHttpServer())
-        .get('/')
-        .send({ message: 'Test message' })
-        .expect(200);
+  it('It should show welcome message and send a message to Kafka and receive it', async () => {
+    await request(httpServer)
+      .get('/')
+      .send({ message: 'Test message' })
+      .expect(200);
 
-    //TODO: Check here some expects with refering to producer and consumer of a kafka
     // Assert that the mock Kafka producer received the message
-    // expect(kf.produce).toHaveBeenCalledWith('test', messagePayload);
-});
+    expect(mockKafkaProducerService.produce).toHaveBeenCalledWith({
+      topic: 'test',
+      messages: [{
+        value: 'Kafka Test',
+      }],
+    });
+  });
 
   it('It should create a new customer (POST) /customers', async () => {
     return request(httpServer)
               .post('/customers')
               .send(mockCustomerDto)
-              .expect(HttpStatus.CREATED)
+              .expect((res)=> {
+                res.statusCode = HttpStatus.CREATED;
+                registeredCustomer = res.body
+              })
   });
 
-  it('It should lists all customers (GET) /customers', async () => {
-    return request(httpServer)
+  it('It should lists all customers (GET) /customers  and check if Registered Customer is Cached', async () => {
+    await request(httpServer)
             .get('/customers')
             .expect(200)
+
+    const cachedCustomersData = JSON.parse(await cachingService.get('all-customers'))
+
+    expect(cachedCustomersData).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ...registeredCustomer
+        }),
+      ]),
+    );
   })
 
   it('It should not create a customer when email already used  (POST) /customers', async () => {
@@ -132,8 +142,6 @@ describe('Tekana wallet E2E Test', () => {
               token = response.body['access_token']
             })
   })
-
-  
   
   it('It should not signin a customer with invalid credentials (POST) /auth/login', async ()=>{
     return request(httpServer)
@@ -149,7 +157,7 @@ describe('Tekana wallet E2E Test', () => {
     return request(httpServer)
             .post('/wallet')
             .send({
-              name: mockWalletCreateDto.name,
+              name: walletCreateDto.name,
             })
             .expect(HttpStatus.UNAUTHORIZED)
   })

@@ -20,10 +20,24 @@ export class RedisService {
     return await this.redis.get(key)
   }
 
-   /**
+  /**
    * Save data in cache
    */
-  async set(key:string, value: string){
+  async set(key:string, value: any){
     return await this.redis.set(key, value, 'EX', CACHE_1_MINUTE);
+  }
+
+  /**
+   * Delete a key
+   */
+  async del(key:string){
+    return await this.redis.del(key)
+  }
+
+  /**
+   * Clear all keys
+   */
+  async clearAllKeys(){
+    return await this.redis.flushdb()
   }
 }

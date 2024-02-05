@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CustomerService } from './customer.service';
-import { CreateCustomerDto } from './dto/create-customer.dto';
+import { CreateCustomerRequestDto } from './dto/create-customer.dto';
 import { ListCustomersDto } from './dto/list-customers.dto';
 import { RedisService } from '../redis/redis.service';
 
@@ -48,7 +48,7 @@ export class CustomersController {
     // Create a customer
     @Post()
     @ApiOperation({ summary: 'Create a customer'})
-    createCustomer(@Body() createCustomerDto: CreateCustomerDto){
+    createCustomer(@Body() createCustomerDto: CreateCustomerRequestDto){
         return this.customerService.create(createCustomerDto)
     }
 

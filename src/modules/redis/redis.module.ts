@@ -8,7 +8,7 @@ import { RedisModule as LiaoLiaoRedisModule } from '@liaoliaots/nestjs-redis';
         config: {
           host: 'localhost',
           port: 6379,
-          password: 'authpassword',
+          // password: 'authpassword',
         },
       }),
     ],

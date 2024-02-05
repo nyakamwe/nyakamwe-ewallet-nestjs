@@ -7,7 +7,7 @@ import { WalletTransaction } from './entities/wallet-transactions.entity';
 import { KafkaProducerService } from '../kafka/kafka.producer'
 import  { WalletTransactionTypeEnum, WalletTransactionStatusEnum } from './enums/wallet-transactions.enum'
 import { CreateWalletTransactionRequestDto } from './dto/create-wallet-transaction.dto'
-import { _404 } from 'src/shared/constants';
+import { _404 } from '../../shared/constants';
 
 @Injectable()
 export class WalletService {

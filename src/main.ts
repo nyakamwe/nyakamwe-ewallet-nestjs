@@ -1,7 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
+
+const logger = new Logger('Main'); 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +23,10 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe())  // Enable the use of validation pipe globally
   
-  await app.listen(process.env.PORT ? parseInt(process.env.PORT) : 3000);
+  await app.listen(process.env.PORT ? parseInt(process.env.PORT) : 3000, ()=>{
+    logger.log(
+      `API running on port: ${process.env.PORT}, environment: ${process.env.NODE_ENV} `,
+    )
+  });
 }
 bootstrap();

@@ -19,10 +19,10 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Set Up Node.js 16.16.0
+      - name: Set Up Node.js 20.0.0
         uses: actions/setup-node@v3
         with:
-          node-version: 16.16.0
+          node-version: 20.0.0
 
       - name: Installing Dependencies using Clean Install
         run: yarn ci

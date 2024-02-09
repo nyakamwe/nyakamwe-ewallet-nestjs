@@ -1,6 +1,24 @@
-<p align="center">
+<!-- <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+</p> -->
+# Improved Tekana Wallet Challenge 🎉.
+
+[![Coverage Status](https://coveralls.io/repos/github/nyakamwe/nyakamwe-ewallet-nestjs/badge.svg?branch=master)](https://coveralls.io/github/nyakamwe/nyakamwe-ewallet-nestjs?branch=master)
+
+### Description
+
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+
+
+### Covered Topics:
+
+
+1. Converting Node Express Submitted Test to NestJS
+2. Testing, **`Integration testing`** usually NestJs call it **End to End Testing** but actually they are Integration Test.
+3. Connecting to **Oracle DB**
+4. Using **TypeOrm** for Designing Tables
+5. Using **Kafka** for Message Queuing
+
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
@@ -22,10 +40,6 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
 ## Installation
 
 ```bash
@@ -36,38 +50,20 @@ $ npm install
 
 ```bash
 # development
-$ npm run start
-
-# watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
 ## Test
 
 ```bash
-# unit tests
-$ npm run test
-
 # e2e tests
-$ npm run test:e2e
+$ `npm run test:e2e`
 
 # test coverage
 $ npm run test:cov
 ```
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- Author - [NYAKAMWE Aimable]
+- Website - [https://nyakamwe.vercel.app/](https://nyakamwe.vercel.app/)

@@ -4,6 +4,7 @@
 # Improved Tekana Wallet Challenge 🎉.
 
 [![Coverage Status](https://coveralls.io/repos/github/nyakamwe/nyakamwe-ewallet-nestjs/badge.svg?branch=master)](https://coveralls.io/github/nyakamwe/nyakamwe-ewallet-nestjs?branch=master)
+![Pass Status](https://github.com/nyakamwe/nyakamwe-ewallet-nestjs/actions/workflows/coveralls-action.yml/badge.svg?branch=master)
 
 ### Description
 

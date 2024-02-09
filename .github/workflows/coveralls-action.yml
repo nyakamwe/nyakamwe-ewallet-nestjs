@@ -1,0 +1,29 @@
+name: Upload Test Results to Coverage
+
+on: 
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+env:
+  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Installing Dependencies
+        run: npm install
+
+      - name: Running Test
+        run: npm run test

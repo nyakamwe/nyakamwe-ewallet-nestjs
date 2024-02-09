@@ -25,13 +25,13 @@ jobs:
           node-version: 20.0.0
 
       - name: Installing Dependencies using Clean Install
-        run: yarn ci
+        run: npm ci
 
       # - name: Running Test
       #   run: yarn test
 
       - name: Running Coverage
-        run: yarn test:cov
+        run: npm run test:cov
 
       - name: Coveralls
         uses: coverallsapp/github-action@master

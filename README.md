@@ -19,6 +19,9 @@
 3. Connecting to **Oracle DB**
 4. Using **TypeOrm** for Designing Tables
 5. Using **Kafka** for Message Queuing
+6. Caching Most Frequent Accessed Data using **REDIS**
+7. Third-party API Integration over http
+8. Error Handling in the application
 
 ## Installation
 

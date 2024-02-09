@@ -18,7 +18,8 @@ jobs:
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "😍 Github Token ${{ github.token }}"
+      - run: echo "😍 Github Token ${{ github }}"
+      - run: echo "Accessing Coveralls token $COVERALLS_REPO_TOKEN , or ${{env.COVERALLS_REPO_TOKEN}}"
 
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -34,3 +35,5 @@ jobs:
 
       - name: Coveralls
         uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: $COVERALLS_REPO_TOKEN

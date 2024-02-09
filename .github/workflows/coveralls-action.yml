@@ -15,17 +15,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "Accessing Coveralls token ${{ secrets.COVERALLS_REPO_TOKEN }}"
 
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Installing Dependencies
-        run: yarn install
+      - name: Set Up Node.js 16.16.0
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.16.0
 
-      - name: Running Test
-        run: yarn test
+      - name: Installing Dependencies using Clean Install
+        run: yarn ci
+
+      # - name: Running Test
+      #   run: yarn test
 
       - name: Running Coverage
         run: yarn test:cov
